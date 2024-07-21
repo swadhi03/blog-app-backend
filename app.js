@@ -19,14 +19,22 @@ const generateHashedPassword = async (password)=>{
 //api for signUp
 app.post("/signup",async (req,res)=>{
     let input = req.body
-    let hashedPassword = await generateHashedPassword(input.password)
+    let hashedPassword = bcrypt.hashSync(req.body.password,10)
     console.log(hashedPassword)
-    input.password=hashedPassword
-    let blog = new usermodel(input)
-    blog.save()
-    console.log(blog)
-
-    res.json({"status":"success"})
+    usermodel.find({email:input.email}).then(
+        (items)=>{
+            if (items.length>0) 
+                {
+                    res.json({"status":"email already exists"})
+                } 
+                else
+                {
+                   let result=new usermodel(input)
+                   result.save() 
+                   res.json({"status":"success"})
+                }
+        }
+    ).catch((error)=>{})
 })
 
 //api for signIn
