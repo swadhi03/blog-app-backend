@@ -4,6 +4,7 @@ const cors = require("cors")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 const  {usermodel} = require("./models/blog")
+const postmodel = require("./models/post")
 
 const app = express()
 app.use(cors())
@@ -73,7 +74,21 @@ app.post("/viewuser",(req,res)=>{
             }
         }
     })
+})
+//api createPost
+app.post("/create",async(req,res)=>{
+    let input=req.body
+    let token=req.headers.token
+    jwt.verify(token,"blog-app",async(error,decoded)=>{
+        if (decoded && decoded.email) {
+            let result=new postmodel(input)
+            await result.save()
+            res.json({"status":"success"})
+        } else {
+           res.json({"status":"Invalid authentication"}) 
+        }
     })
+})
 
 app.listen(8080,()=>{
     console.log("server Started")
