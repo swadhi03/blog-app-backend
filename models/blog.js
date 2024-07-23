@@ -6,5 +6,5 @@ const schema=mongoose.Schema(
         "password":{type:String,required:true}
     }
 )
-let usermodel=mongoose.model("users",schema)
-module.exports={usermodel}
+var usermodel=mongoose.model("users",schema)
+module.exports=usermodel

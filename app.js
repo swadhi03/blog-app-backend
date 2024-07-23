@@ -1,9 +1,9 @@
 const express = require("express")
 const mongoose = require("mongoose")
 const cors = require("cors")
-const bcrypt = require("bcryptjs")
+const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
-const  {usermodel} = require("./models/blog")
+const  usermodel = require("./models/blog")
 const postmodel = require("./models/post")
 
 const app = express()
@@ -18,6 +18,7 @@ app.post("/signup",async (req,res)=>{
     let input = req.body
     let hashedPassword = bcrypt.hashSync(req.body.password,10)
     console.log(hashedPassword)
+    req.body.password=hashedPassword
     usermodel.find({email:input.email}).then(
         (items)=>{
             if (items.length>0) 
@@ -37,17 +38,17 @@ app.post("/signup",async (req,res)=>{
 //api for signIn
 app.post("/signin",async(req,res)=>{
     let input=req.body
-    let result=usermodel.find({email:input.email}).then(
-        (response)=>{
-        if (response.length>0) {
-            const passwordValidator=bcrypt.compareSync(input.password,response[0].password)
+    let result=usermodel.find({email:req.body.email}).then(
+        (items)=>{
+        if (items.length>0) {
+            const passwordValidator=bcrypt.compareSync(req.body.password,items[0].password)
             if (passwordValidator) {
                 jwt.sign({email:req.body.email},"blog-app",{expiresIn:"1d"},
                     (error,token)=>{
                         if (error) {
                             res.json({"status":"error","errorMessage":error})
                         } else {
-                            res.json({"status":"success","token":token,"userId":response[0]._id})
+                            res.json({"status":"success","token":token,"userId":items[0]._id})
                         }
                     })
             } else {
@@ -95,10 +96,11 @@ app.post("/viewall",async(req,res)=>{
     let token=req.headers.token
     jwt.verify(token,"blog-app",(error,decoded)=>{
         if (decoded && decoded.email) {
-            postmodel.find(),then(
+            postmodel.find().then(
                 (items)=>{
                     res.json(items)
-            }).catch((error)=>{
+            }).catch(
+                (error)=>{
                 res.json({"status":"error"})
             })
         } else {
