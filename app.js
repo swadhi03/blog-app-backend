@@ -92,11 +92,30 @@ app.post("/create",async(req,res)=>{
 })
 
 //api viewAll
-app.post("/viewall",async(req,res)=>{
+app.post("/viewall",(req,res)=>{
     let token=req.headers.token
     jwt.verify(token,"blog-app",(error,decoded)=>{
         if (decoded && decoded.email) {
             postmodel.find().then(
+                (items)=>{
+                    res.json(items)
+            }).catch(
+                (error)=>{
+                res.json({"status":"error"})
+            })
+        } else {
+            res.json({"status":"Invalid Authentication"})
+        }
+    })
+})
+
+//api View My Post
+app.post("/mypost",(req,res)=>{
+    let input = req.body
+    let token=req.headers.token
+    jwt.verify(token,"blog-app",(error,decoded)=>{
+        if (decoded && decoded.email) {
+            postmodel.find(input).then(
                 (items)=>{
                     res.json(items)
             }).catch(
