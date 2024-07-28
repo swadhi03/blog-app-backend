@@ -120,7 +120,7 @@ app.post("/mypost",(req,res)=>{
                     res.json(items)
             }).catch(
                 (error)=>{
-                res.json({"status":"error"})
+                res.json({"status":error})
             })
         } else {
             res.json({"status":"Invalid Authentication"})
