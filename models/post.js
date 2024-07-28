@@ -3,7 +3,8 @@ const schema=mongoose.Schema(
     {
         userId:{type:mongoose.Schema.Types.ObjectId,ref:"users"},
         message:{type:String},
-        postdate:{type:Date,default:Date.now}
+        postdate:{type:Date,default:Date.now},
+        image:{type:String}
     }
 )
 var postmodel=mongoose.model("posts",schema)
